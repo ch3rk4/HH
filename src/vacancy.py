@@ -1,4 +1,4 @@
-from typing import Optional, Dict, Any, List
+from typing import Any, Dict, List, Optional
 
 
 class Vacancy:
@@ -6,16 +6,26 @@ class Vacancy:
     Class for working with vacancy data
     """
 
-    __slots__ = ('__id', '__name', '__url', '__salary', '__description', '__employer', '__area')
+    __slots__ = (
+        "__id",
+        "__name",
+        "__url",
+        "__salary",
+        "__description",
+        "__employer",
+        "__area",
+    )
 
-    def __init__(self,
-                 vacancy_id: str,
-                 name: str,
-                 url: str,
-                 salary: Optional[Dict[str, Any]],
-                 description: str,
-                 employer: str,
-                 area: str):
+    def __init__(
+        self,
+        vacancy_id: str,
+        name: str,
+        url: str,
+        salary: Optional[Dict[str, Any]],
+        description: str,
+        employer: str,
+        area: str,
+    ):
         """
         Initialize vacancy with data
         """
@@ -33,26 +43,28 @@ class Vacancy:
         """
         if not salary:
             return {
-                'from': 0,
-                'to': 0,
-                'currency': 'RUR',
-                'display': 'Зарплата не указана'
+                "from": 0,
+                "to": 0,
+                "currency": "RUR",
+                "display": "Зарплата не указана",
             }
 
         result = {
-            'from': salary.get('from', 0) or 0,
-            'to': salary.get('to', 0) or 0,
-            'currency': salary.get('currency', 'RUR'),
+            "from": salary.get("from", 0) or 0,
+            "to": salary.get("to", 0) or 0,
+            "currency": salary.get("currency", "RUR"),
         }
 
-        if result['from'] and result['to']:
-            result['display'] = f"{result['from']} - {result['to']} {result['currency']}"
-        elif result['from']:
-            result['display'] = f"от {result['from']} {result['currency']}"
-        elif result['to']:
-            result['display'] = f"до {result['to']} {result['currency']}"
+        if result["from"] and result["to"]:
+            result["display"] = (
+                f"{result['from']} - {result['to']} {result['currency']}"
+            )
+        elif result["from"]:
+            result["display"] = f"от {result['from']} {result['currency']}"
+        elif result["to"]:
+            result["display"] = f"до {result['to']} {result['currency']}"
         else:
-            result['display'] = 'Зарплата не указана'
+            result["display"] = "Зарплата не указана"
 
         return result
 
@@ -94,22 +106,22 @@ class Vacancy:
     @property
     def salary_from(self) -> int:
         """Get minimum salary"""
-        return self.__salary['from']
+        return self.__salary["from"]
 
     @property
     def salary_to(self) -> int:
         """Get maximum salary"""
-        return self.__salary['to']
+        return self.__salary["to"]
 
     @property
     def salary_currency(self) -> str:
         """Get salary currency"""
-        return self.__salary['currency']
+        return self.__salary["currency"]
 
     @property
     def salary_display(self) -> str:
         """Get formatted salary string for display"""
-        return self.__salary['display']
+        return self.__salary["display"]
 
     def __lt__(self, other) -> bool:
         """
@@ -164,54 +176,54 @@ class Vacancy:
         Convert vacancy to dictionary for serialization
         """
         return {
-            'id': self.__id,
-            'name': self.__name,
-            'url': self.__url,
-            'salary': self.__salary,
-            'description': self.__description,
-            'employer': self.__employer,
-            'area': self.__area
+            "id": self.__id,
+            "name": self.__name,
+            "url": self.__url,
+            "salary": self.__salary,
+            "description": self.__description,
+            "employer": self.__employer,
+            "area": self.__area,
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'Vacancy':
+    def from_dict(cls, data: Dict[str, Any]) -> "Vacancy":
         """
         Create vacancy from dictionary (deserialization)
         """
         return cls(
-            vacancy_id=data['id'],
-            name=data['name'],
-            url=data['url'],
-            salary=data['salary'],
-            description=data['description'],
-            employer=data['employer'],
-            area=data['area']
+            vacancy_id=data["id"],
+            name=data["name"],
+            url=data["url"],
+            salary=data["salary"],
+            description=data["description"],
+            employer=data["employer"],
+            area=data["area"],
         )
 
     @staticmethod
-    def cast_to_object_list(vacancies_data: List[Dict[str, Any]]) -> List['Vacancy']:
+    def cast_to_object_list(vacancies_data: List[Dict[str, Any]]) -> List["Vacancy"]:
         """
         Convert list of dictionaries from API to list of Vacancy objects
         """
         vacancy_objects = []
 
         for vacancy_dict in vacancies_data:
-            snippet = vacancy_dict.get('snippet', {})
-            employer = vacancy_dict.get('employer', {})
-            area = vacancy_dict.get('area', {})
+            snippet = vacancy_dict.get("snippet", {})
+            employer = vacancy_dict.get("employer", {})
+            area = vacancy_dict.get("area", {})
 
-            requirement = snippet.get('requirement', '')
-            responsibility = snippet.get('responsibility', '')
+            requirement = snippet.get("requirement", "")
+            responsibility = snippet.get("responsibility", "")
             description = f"{requirement} {responsibility}".strip()
 
             vacancy = Vacancy(
-                vacancy_id=vacancy_dict.get('id', ''),
-                name=vacancy_dict.get('name', ''),
-                url=vacancy_dict.get('alternate_url', ''),
-                salary=vacancy_dict.get('salary'),
+                vacancy_id=vacancy_dict.get("id", ""),
+                name=vacancy_dict.get("name", ""),
+                url=vacancy_dict.get("alternate_url", ""),
+                salary=vacancy_dict.get("salary"),
                 description=description,
-                employer=employer.get('name', ''),
-                area=area.get('name', '')
+                employer=employer.get("name", ""),
+                area=area.get("name", ""),
             )
 
             vacancy_objects.append(vacancy)

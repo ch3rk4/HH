@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
+from typing import Any, Dict, List
+
 import requests
-from typing import List, Dict, Any
 
 
 class Parser(ABC):
@@ -38,9 +39,9 @@ class HH(Parser):
         """
         Initialize HeadHunter API parser
         """
-        self.__url = 'https://api.hh.ru/vacancies'
-        self.__headers = {'User-Agent': 'HH-User-Agent'}
-        self.__params = {'text': '', 'page': 0, 'per_page': 100}
+        self.__url = "https://api.hh.ru/vacancies"
+        self.__headers = {"User-Agent": "HH-User-Agent"}
+        self.__params = {"text": "", "page": 0, "per_page": 100}
         self.__vacancies = []
         super().__init__(file_worker)
 
@@ -50,7 +51,9 @@ class HH(Parser):
         """
         response = requests.get(self.__url, headers=self.__headers)
         if response.status_code != 200:
-            raise ConnectionError(f"Failed to connect to HH API: {response.status_code}")
+            raise ConnectionError(
+                f"Failed to connect to HH API: {response.status_code}"
+            )
 
     def get_vacancies(self, keyword: str) -> List[Dict[str, Any]]:
         """
@@ -58,24 +61,26 @@ class HH(Parser):
         """
         self._connect()
 
-        self.__params['text'] = keyword
+        self.__params["text"] = keyword
         self.__vacancies = []
 
         page = 0
         total_pages = 20
 
         while page < total_pages:
-            self.__params['page'] = page
-            response = requests.get(self.__url, headers=self.__headers, params=self.__params)
+            self.__params["page"] = page
+            response = requests.get(
+                self.__url, headers=self.__headers, params=self.__params
+            )
             data = response.json()
 
-            if not data.get('items'):
+            if not data.get("items"):
                 break
 
-            self.__vacancies.extend(data['items'])
+            self.__vacancies.extend(data["items"])
             page += 1
 
-            if page >= data.get('pages', 0):
+            if page >= data.get("pages", 0):
                 break
 
         return self.__vacancies

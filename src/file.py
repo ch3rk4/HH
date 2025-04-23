@@ -1,7 +1,8 @@
-from abc import ABC, abstractmethod
 import json
 import os
-from typing import List, Dict, Any, Optional, Union
+from abc import ABC, abstractmethod
+from typing import Any, Dict, List, Optional, Union
+
 from src.vacancy import Vacancy
 
 
@@ -43,7 +44,7 @@ class JSONSaver(FileWorker):
     Class for working with JSON files to store vacancies
     """
 
-    def __init__(self, filename: str = 'vacancies.json'):
+    def __init__(self, filename: str = "vacancies.json"):
         """
         Initialize JSON file worker
         """
@@ -54,22 +55,22 @@ class JSONSaver(FileWorker):
         """
         Ensure that the file exists, create if it doesn't
         """
-        os.makedirs('data', exist_ok=True)
+        os.makedirs("data", exist_ok=True)
 
-        filepath = os.path.join('data', self._filename)
+        filepath = os.path.join("data", self._filename)
 
         if not os.path.exists(filepath):
-            with open(filepath, 'w', encoding='utf-8') as f:
+            with open(filepath, "w", encoding="utf-8") as f:
                 json.dump([], f)
 
     def add_vacancy(self, vacancy: Union[Vacancy, List[Vacancy]]) -> None:
         """
         Add vacancy or list of vacancies to JSON file
         """
-        filepath = os.path.join('data', self._filename)
+        filepath = os.path.join("data", self._filename)
 
         try:
-            with open(filepath, 'r', encoding='utf-8') as f:
+            with open(filepath, "r", encoding="utf-8") as f:
                 vacancies = json.load(f)
         except json.JSONDecodeError:
             vacancies = []
@@ -79,24 +80,24 @@ class JSONSaver(FileWorker):
         else:
             vacancies_to_add = vacancy
 
-        existing_ids = {v.get('id') for v in vacancies}
+        existing_ids = {v.get("id") for v in vacancies}
 
         for v in vacancies_to_add:
             if v.id not in existing_ids:
                 vacancies.append(v.to_dict())
                 existing_ids.add(v.id)
 
-        with open(filepath, 'w', encoding='utf-8') as f:
+        with open(filepath, "w", encoding="utf-8") as f:
             json.dump(vacancies, f, ensure_ascii=False, indent=2)
 
     def get_vacancies(self, criteria: Optional[Dict[str, Any]] = None) -> List[Vacancy]:
         """
         Get vacancies from JSON file, optionally filtered by criteria
         """
-        filepath = os.path.join('data', self._filename)
+        filepath = os.path.join("data", self._filename)
 
         try:
-            with open(filepath, 'r', encoding='utf-8') as f:
+            with open(filepath, "r", encoding="utf-8") as f:
                 vacancies = json.load(f)
         except (json.JSONDecodeError, FileNotFoundError):
             return []
@@ -110,16 +111,18 @@ class JSONSaver(FileWorker):
                 match = True
 
                 for key, value in criteria.items():
-                    if key == 'keyword':
-                        if (value.lower() not in vacancy.name.lower() and
-                                value.lower() not in vacancy.description.lower()):
+                    if key == "keyword":
+                        if (
+                            value.lower() not in vacancy.name.lower()
+                            and value.lower() not in vacancy.description.lower()
+                        ):
                             match = False
                             break
-                    elif key == 'salary_from':
+                    elif key == "salary_from":
                         if vacancy.salary_from < value:
                             match = False
                             break
-                    elif key == 'salary_to':
+                    elif key == "salary_to":
                         if vacancy.salary_to > 0 and vacancy.salary_to > value:
                             match = False
                             break
@@ -135,15 +138,15 @@ class JSONSaver(FileWorker):
         """
         Delete vacancy from JSON file by ID
         """
-        filepath = os.path.join('data', self._filename)
+        filepath = os.path.join("data", self._filename)
 
         try:
-            with open(filepath, 'r', encoding='utf-8') as f:
+            with open(filepath, "r", encoding="utf-8") as f:
                 vacancies = json.load(f)
         except (json.JSONDecodeError, FileNotFoundError):
             return
 
-        vacancies = [v for v in vacancies if v.get('id') != vacancy_id]
+        vacancies = [v for v in vacancies if v.get("id") != vacancy_id]
 
-        with open(filepath, 'w', encoding='utf-8') as f:
+        with open(filepath, "w", encoding="utf-8") as f:
             json.dump(vacancies, f, ensure_ascii=False, indent=2)

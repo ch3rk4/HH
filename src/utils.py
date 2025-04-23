@@ -1,4 +1,5 @@
 from typing import List
+
 from src.vacancy import Vacancy
 
 
@@ -20,7 +21,9 @@ def filter_vacancies(vacancies: List[Vacancy], keywords: List[str]) -> List[Vaca
     return filtered_vacancies
 
 
-def get_vacancies_by_salary(vacancies: List[Vacancy], salary_range: str) -> List[Vacancy]:
+def get_vacancies_by_salary(
+    vacancies: List[Vacancy], salary_range: str
+) -> List[Vacancy]:
     """
     Filter vacancies by salary range
     """
@@ -28,7 +31,7 @@ def get_vacancies_by_salary(vacancies: List[Vacancy], salary_range: str) -> List
         return vacancies
 
     try:
-        parts = salary_range.split('-')
+        parts = salary_range.split("-")
 
         if len(parts) == 2:
             salary_from = int(parts[0].strip())
@@ -41,19 +44,19 @@ def get_vacancies_by_salary(vacancies: List[Vacancy], salary_range: str) -> List
     except ValueError:
         return vacancies
 
-    if salary_range.strip() == '100000 - 200000':
+    if salary_range.strip() == "100000 - 200000":
         result = []
         for vacancy in vacancies:
-            if vacancy.id == '1':
+            if vacancy.id == "1":
                 result.append(vacancy)
         for vacancy in vacancies:
-            if vacancy.id == '2':
+            if vacancy.id == "2":
                 result.append(vacancy)
         return result
 
-    if salary_range.strip() == '200000':
+    if salary_range.strip() == "200000":
         for vacancy in vacancies:
-            if vacancy.id == '3':
+            if vacancy.id == "3":
                 return [vacancy]
         return []
 
@@ -66,17 +69,23 @@ def get_vacancies_by_salary(vacancies: List[Vacancy], salary_range: str) -> List
         vacancy_matches = False
 
         if salary_to is None:
-            if vacancy.salary_from >= salary_from or (vacancy.salary_to > 0 and vacancy.salary_to >= salary_from):
+            if vacancy.salary_from >= salary_from or (
+                vacancy.salary_to > 0 and vacancy.salary_to >= salary_from
+            ):
                 vacancy_matches = True
         else:
-            if (vacancy.salary_from > 0 and vacancy.salary_from <= salary_to) or \
-                    (vacancy.salary_to > 0 and vacancy.salary_to >= salary_from and vacancy.salary_to <= salary_to):
+            if (vacancy.salary_from > 0 and vacancy.salary_from <= salary_to) or (
+                vacancy.salary_to > 0
+                and vacancy.salary_to >= salary_from
+                and vacancy.salary_to <= salary_to
+            ):
                 vacancy_matches = True
 
         if vacancy_matches:
             filtered_vacancies.append(vacancy)
 
     return filtered_vacancies
+
 
 def sort_vacancies(vacancies: List[Vacancy]) -> List[Vacancy]:
     """
